@@ -4086,10 +4086,12 @@
 #ifdef W3_S
       INTEGER, SAVE           :: IENT = 0
 #endif
-      REAL                    :: FACTOR, FKD,KD
+      REAL                    :: FACTOR, FKD,KD, FACTOR2
       REAL                    :: ABX(NSEAL), ABY(NSEAL), USSCO
       REAL                    :: MINDIFF
       INTEGER                 :: Spc2Bnd(NK)
+
+      REAL                    :: ETUSCX(NSEAL), ETUSCY(NSEAL)
 !/
 !/ ------------------------------------------------------------------- /
 !/
@@ -4210,6 +4212,16 @@
                USSP(JSEA,Spc2Bnd(IK))    =  USSP(JSEA,Spc2Bnd(IK)) + ABX(JSEA)*USSCO
                USSP(JSEA,NK+Spc2BND(IK)) =  USSP(JSEA,NK+Spc2Bnd(IK)) + ABY(JSEA)*USSCO
             ENDIF
+
+            ! TODO: add a switch to turn on/off tail contribution
+            IF (IK.EQ.NK) THEN
+              FACTOR2       = SIG(IK)**5/(GRAV**2)/DSII(IK)
+              ETUSCX(JSEA)  = ABX(JSEA)*FACTOR*FACTOR2
+              ETUSCY(JSEA)  = ABY(JSEA)*FACTOR*FACTOR2
+              USSP(JSEA,Spc2Bnd(IK))    =  USSP(JSEA,Spc2Bnd(IK)) + 2*GRAV*ETUSCX(JSEA)/SIG(NK)
+              USSP(JSEA,NK+Spc2BND(IK)) =  USSP(JSEA,NK+Spc2Bnd(IK)) + 2*GRAV*ETUSCY(JSEA)/SIG(NK)
+            ENDIF
+
          END DO
 #ifdef W3_OMPG
 !$OMP END PARALLEL DO
