@@ -41,8 +41,8 @@ add_compile_definitions(W3_CESMCOUPLED)
 add_compile_definitions(W3_NCO)
 add_compile_definitions(W3_DIST)
 add_compile_definitions(W3_MPI)
-add_compile_definitions(W3_OMPG)
-add_compile_definitions(W3_OMPH)
+#add_compile_definitions(W3_OMPG)
+#add_compile_definitions(W3_OMPH)
 add_compile_definitions(W3_PR3)
 add_compile_definitions(W3_UQ)
 add_compile_definitions(W3_FLX0)
@@ -71,10 +71,14 @@ add_compile_definitions(W3_O6)
 add_compile_definitions(W3_O7)
 add_compile_definitions(W3_O14)
 add_compile_definitions(W3_O15)
-add_compile_definitions(W3_IC4)
+#add_compile_definitions(W3_IC4)
+add_compile_definitions(W3_IC0)
 add_compile_definitions(W3_IS0)
 add_compile_definitions(W3_REF0)
 add_compile_definitions(ENDIANNESS="big_endian")
+
+add_compile_definitions(W3_PDLIB)
+add_compile_definitions(W3_METIS)
 
 set_property(SOURCE w3initmd.F90
   APPEND
@@ -115,7 +119,7 @@ set(SRCFILES constants.F90
              w3profsmd.F90
              w3sdb1md.F90
              w3servmd.F90
-             w3sic4md.F90
+            #w3sic4md.F90
              w3snl1md.F90
              w3src0md.F90
              w3src4md.F90
@@ -139,7 +143,20 @@ set(SRCFILES constants.F90
              wav_kind_mod.F90
              wav_shel_inp.F90
              wav_shr_flags.F90
-             wav_shr_mod.F90)
+             wav_shr_mod.F90
+	     ${CMAKE_CURRENT_SOURCE_DIR}/pdlib_field_vec.F90
+	     ${CMAKE_CURRENT_SOURCE_DIR}/w3profsmd_pdlib.F90
+	     ${CMAKE_CURRENT_SOURCE_DIR}/PDLIB/yowdatapool.F90
+	     ${CMAKE_CURRENT_SOURCE_DIR}/PDLIB/yowelementpool.F90
+	     ${CMAKE_CURRENT_SOURCE_DIR}/PDLIB/yowerr.F90
+	     ${CMAKE_CURRENT_SOURCE_DIR}/PDLIB/yowexchangeModule.F90
+	     ${CMAKE_CURRENT_SOURCE_DIR}/PDLIB/yowfunction.F90
+	     ${CMAKE_CURRENT_SOURCE_DIR}/PDLIB/yownodepool.F90
+	     ${CMAKE_CURRENT_SOURCE_DIR}/PDLIB/yowpd.F90
+	     ${CMAKE_CURRENT_SOURCE_DIR}/PDLIB/yowpdlibmain.F90
+	     ${CMAKE_CURRENT_SOURCE_DIR}/PDLIB/yowrankModule.F90
+	     ${CMAKE_CURRENT_SOURCE_DIR}/PDLIB/yowsidepool.F90
+             )
 
 foreach(FILE ${SRCFILES})
   if(EXISTS "${CASEROOT}/SourceMods/src.ww3/${FILE}")
