@@ -4203,25 +4203,29 @@
                Spc2BND(IK) = 1
                MINDIFF=abs(USSP_WN(1)-WN(IK,ISEA))
                DO IB=2,USSPF(2)
-                  IF (MinDiff .gt. abs(USSP_WN(IB)-WN(IK,ISEA))) then
+                  IF (MinDiff .gt. abs(USSP_WN(IB)-WN(IK,ISEA)) .and. USSP_WN(IB) .le. WN(NK,ISEA) ) then
                      Spc2BND(IK) = IB
                      MinDiff = abs(USSP_WN(IB)-WN(IK,ISEA))
+                  ELSEIF (USSP_WN(IB) .gt. WN(NK,ISEA) .and. IB.ne.USSPF(2)) then
+                     !TODO: make this warning message a fatal error
+                     print *, "WW3 WARNING: USSP_WN with index", IB, " outside the spectral domain!"
                   ENDIF
                ENDDO
                !Put spectral energey into whichever band central wavenumber fits in
                USSP(JSEA,Spc2Bnd(IK))    =  USSP(JSEA,Spc2Bnd(IK)) + ABX(JSEA)*USSCO
                USSP(JSEA,NK+Spc2BND(IK)) =  USSP(JSEA,NK+Spc2Bnd(IK)) + ABY(JSEA)*USSCO
-            ENDIF
 
-            ! TODO: add a switch to turn on/off tail contribution
-            IF (IK.EQ.NK) THEN
-              FACTOR2       = SIG(IK)**5/(GRAV**2)/DSII(IK)
-              ETUSCX(JSEA)  = ABX(JSEA)*FACTOR*FACTOR2
-              ETUSCY(JSEA)  = ABY(JSEA)*FACTOR*FACTOR2
-              USSP(JSEA,Spc2Bnd(IK))    =  USSP(JSEA,Spc2Bnd(IK)) + 2*GRAV*ETUSCX(JSEA)/SIG(NK)
-              USSP(JSEA,NK+Spc2BND(IK)) =  USSP(JSEA,NK+Spc2Bnd(IK)) + 2*GRAV*ETUSCY(JSEA)/SIG(NK)
-            ENDIF
+               ! TODO: add a switch to turn on/off tail contribution
+               ! Add the tail contribution to the last band (i.e., index USSPF(2))
+               IF (IK.EQ.NK) THEN
+                 FACTOR2       = SIG(IK)**5/(GRAV**2)/DSII(IK)
+                 ETUSCX(JSEA)  = ABX(JSEA)*FACTOR*FACTOR2
+                 ETUSCY(JSEA)  = ABY(JSEA)*FACTOR*FACTOR2
+                 USSP(JSEA,USSPF(2))    =  USSP(JSEA,USSPF(2)) + 2*GRAV*ETUSCX(JSEA)/SIG(NK)
+                 USSP(JSEA,NK+USSPF(2)) =  USSP(JSEA,NK+USSPF(2)) + 2*GRAV*ETUSCY(JSEA)/SIG(NK)
+               ENDIF
 
+            ENDIF
          END DO
 #ifdef W3_OMPG
 !$OMP END PARALLEL DO
