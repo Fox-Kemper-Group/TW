@@ -141,8 +141,8 @@ contains
        call fldlist_add(fldsFrWav_num, fldsFrWav, 'Sw_ustokes')
        call fldlist_add(fldsFrWav_num, fldsFrWav, 'Sw_vstokes')
       !call fldlist_add(fldsFrWav_num, fldsFrWav, 'Sw_hstokes')
-       call fldlist_add(fldsFrWav_num, fldsFrWav, 'Sw_pstokes_x', ungridded_lbound=1, ungridded_ubound=3)
-       call fldlist_add(fldsFrWav_num, fldsFrWav, 'Sw_pstokes_y', ungridded_lbound=1, ungridded_ubound=3)
+       call fldlist_add(fldsFrWav_num, fldsFrWav, 'Sw_pstokes_x', ungridded_lbound=1, ungridded_ubound=4)
+       call fldlist_add(fldsFrWav_num, fldsFrWav, 'Sw_pstokes_y', ungridded_lbound=1, ungridded_ubound=4)
     else
        call fldlist_add(fldsFrWav_num, fldsFrWav, 'Sw_z0')
        call fldlist_add(fldsFrWav_num, fldsFrWav, 'Sw_ustokes1')
