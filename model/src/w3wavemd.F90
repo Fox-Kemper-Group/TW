@@ -1683,6 +1683,11 @@ CONTAINS
         END IF
 #endif
 
+        !PSH TheoryWaves begin
+        !skip main wave model
+        GOTO 380
+        !PSH TheoryWaves end
+
         !
         ! 3.6 Perform Propagation = = = = = = = = = = = = = = = = = = = = = = =
         ! 3.6.1 Preparations
@@ -2315,6 +2320,11 @@ CONTAINS
         !
 380     CONTINUE
         !
+        !PSH TheoryWaves begin
+        !Insert TW logic here
+        !PSH TheoryWaves end
+
+
         IF (IT.NE.NT) THEN
           DTTST  = DSEC21 ( TIME , TCALC )
           DTG    = DTTST / REAL(NT-IT)
