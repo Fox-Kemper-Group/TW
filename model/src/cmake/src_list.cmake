@@ -3,7 +3,6 @@ set(c_src w3getmem.c)
 # Core files always built
 set(ftn_src
   constants.F90
-  theorywaves.F90
   w3adatmd.F90
   w3arrymd.F90
   w3bullmd.F90
