@@ -494,6 +494,9 @@ CONTAINS
     use w3iogoncdmd   , only : w3iogoncd
     use w3odatmd      , only : histwr, rstwr, user_netcdf_grdout
     !
+    !PSH Theorywaves begin
+    USE THEORYWAVES
+    !PSH Theorywaves end
 #ifdef W3_MPI
     INCLUDE "mpif.h"
 #endif
