@@ -657,21 +657,26 @@ contains
         call init_get_isea(isea, jsea)
         ix  = mapsf(isea,1)
         iy  = mapsf(isea,2)
-        if (mapsta(iy,ix) == 1 .and. HS(jsea) > zero .and. &
-            sqrt(USSX(jsea)**2+USSY(jsea)**2)>zero .and. sqrt(USSHX(jsea)**2+USSHY(jsea)**2)>zero ) then
-           sww = atan2(USSHY(jsea),USSHX(jsea)) - UD(isea)
-           alphal = atan( sin(sww) / (                                       &
-                          2.5 * UST(isea)*ASF(isea)*sqrt(dair/dwat)          &
-                        / max(1.e-14_r8, sqrt(USSX(jsea)**2+USSY(jsea)**2))     &
-                        * log(max(1.0, abs(1.25*HSL(ix,iy)/HS(jsea))))       &
-                        + cos(sww)   )                                       &
-                        )
-           lasl = sqrt(ust(isea) * asf(isea) * sqrt(dair/dwat) &
-                                 / sqrt(usshx(jsea)**2 + usshy(jsea)**2 ))
-           laslpj = lasl * sqrt(abs(cos(alphal)) &
-               / abs(cos(sww-alphal)))
-           sw_lamult(jsea) = min(5.0, abs(cos(alphal)) * &
-                              sqrt(1.0+(1.5*laslpj)**(-2)+(5.4_r8*laslpj)**(-4)))
+        if (mapsta(iy,ix) == 1) then
+!PSH begin TheoryWaves
+!        if (mapsta(iy,ix) == 1 .and. HS(jsea) > zero .and. &
+!            sqrt(USSX(jsea)**2+USSY(jsea)**2)>zero .and. sqrt(USSHX(jsea)**2+USSHY(jsea)**2)>zero ) then
+!           sww = atan2(USSHY(jsea),USSHX(jsea)) - UD(isea)
+!           alphal = atan( sin(sww) / (                                       &
+!                          2.5 * UST(isea)*ASF(isea)*sqrt(dair/dwat)          &
+!                        / max(1.e-14_r8, sqrt(USSX(jsea)**2+USSY(jsea)**2))     &
+!                        * log(max(1.0, abs(1.25*HSL(ix,iy)/HS(jsea))))       &
+!                        + cos(sww)   )                                       &
+!                        )
+!           lasl = sqrt(ust(isea) * asf(isea) * sqrt(dair/dwat) &
+!                                 / sqrt(usshx(jsea)**2 + usshy(jsea)**2 ))
+!           laslpj = lasl * sqrt(abs(cos(alphal)) &
+!               / abs(cos(sww-alphal)))
+!           sw_lamult(jsea) = min(5.0, abs(cos(alphal)) * &
+!                              sqrt(1.0+(1.5*laslpj)**(-2)+(5.4_r8*laslpj)**(-4)))
+           sw_lamult(jsea) = 4.2
+
+!PSH end TheoryWaves
         else
           sw_lamult(jsea)  = 1.
         endif
