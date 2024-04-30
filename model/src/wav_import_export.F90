@@ -22,6 +22,9 @@ module wav_import_export
   use wav_shr_mod  , only : wav_coupling_to_cice, nwav_elev_spectrum, merge_import, dbug_flag, multigrid, unstr_mesh
   use constants    , only : grav, tpi, dwat, dair
   use w3parall     , only : init_get_isea
+!PSH Begin TheoryWaves
+  use THEORYWAVES
+!PSH End TheoryWaves
 
   implicit none
   private ! except
