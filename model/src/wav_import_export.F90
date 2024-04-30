@@ -677,8 +677,7 @@ contains
 !               / abs(cos(sww-alphal)))
 !           sw_lamult(jsea) = min(5.0, abs(cos(alphal)) * &
 !                              sqrt(1.0+(1.5*laslpj)**(-2)+(5.4_r8*laslpj)**(-4)))
-           sw_lamult(jsea) = 4.2
-
+           sw_lamult(jsea) = EFactor_model(10.,1.,HSL(ix,iy))
 !PSH end TheoryWaves
         else
           sw_lamult(jsea)  = 1.
