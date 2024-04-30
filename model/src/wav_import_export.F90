@@ -495,22 +495,39 @@ contains
 
       UX0(:,:) = def_value   ! atm u momentum
       UXN(:,:) = def_value
-      if (state_fldchk(importState, 'Faxa_taux')) then
-        call SetGlobalInput(importState, 'Faxa_taux', vm, global_data, rc)
+!PSH TheoryWaves begin
+      if (state_fldchk(importState, 'Fwxx_taux')) then 
+        call SetGlobalInput(importState, 'Fwxx_taux', vm, global_data, rc)
         if (ChkErr(rc,__LINE__,u_FILE_u)) return
-        call FillGlobalInput(global_data, UX0)
-        call FillGlobalInput(global_data, UXN)
+        call FillGlobalInput(global_data, UX0) 
+        call FillGlobalInput(global_data, UXN) 
       end if
+!     if (state_fldchk(importState, 'Faxa_taux')) then
+!       call SetGlobalInput(importState, 'Faxa_taux', vm, global_data, rc)
+!       if (ChkErr(rc,__LINE__,u_FILE_u)) return
+!       call FillGlobalInput(global_data, UX0)
+!       call FillGlobalInput(global_data, UXN)
+!     end if
+!PSH TheoryWaves end
 
       UY0(:,:) = def_value   ! atm v momentum
       UYN(:,:) = def_value
-      if (state_fldchk(importState, 'Faxa_tauy')) then
+!PSH TheoryWaves begin
+      if (state_fldchk(importState, 'Fwxx_tauy')) then
         if (ChkErr(rc,__LINE__,u_FILE_u)) return
-        call SetGlobalInput(importState, 'Faxa_tauy', vm, global_data, rc)
+        call SetGlobalInput(importState, 'Fwxx_tauy', vm, global_data, rc)
         if (ChkErr(rc,__LINE__,u_FILE_u)) return
-        call FillGlobalInput(global_data, UY0)
-        call FillGlobalInput(global_data, UYN)
+        call FillGlobalInput(global_data, UY0) 
+        call FillGlobalInput(global_data, UYN) 
       end if
+!      if (state_fldchk(importState, 'Faxa_tauy')) then
+!        if (ChkErr(rc,__LINE__,u_FILE_u)) return
+!        call SetGlobalInput(importState, 'Faxa_tauy', vm, global_data, rc)
+!        if (ChkErr(rc,__LINE__,u_FILE_u)) return
+!        call FillGlobalInput(global_data, UY0)
+!        call FillGlobalInput(global_data, UYN)
+!      end if
+!PSH TheoryWaves end
     end if
     ! ---------------
     ! INFLAGS1(-7)
