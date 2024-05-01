@@ -119,6 +119,10 @@ contains
       call fldlist_add(fldsToWav_num, fldsToWav, 'Sa_u'       )
       call fldlist_add(fldsToWav_num, fldsToWav, 'Sa_v'       )
       call fldlist_add(fldsToWav_num, fldsToWav, 'So_bldepth' )
+!PSH TheoryWaves begin
+      call fldlist_add(fldsToWav_num, fldsToWav, 'Fwxx_taux'  )
+      call fldlist_add(fldsToWav_num, fldsToWav, 'Fwxx_tauy'  )
+!PSH TheoryWaves end
     else
       call fldlist_add(fldsToWav_num, fldsToWav, 'Sa_u10m'    )
       call fldlist_add(fldsToWav_num, fldsToWav, 'Sa_v10m'    )
@@ -485,50 +489,62 @@ contains
     ! ocn mixing layer depth
     global_data = max(global_data, 5.)*0.2
     call FillGlobalInput(global_data, HSL)
+!PSH TheoryWaves begin
+    ! ---------------
+    ! wind stress
+    ! ---------------
+!    UX0(:,:) = def_value   ! atm u momentum
+!    call SetGlobalInput(importState, 'Fwxx_taux', vm, global_data, rc)
+!    if (ChkErr(rc,__LINE__,u_FILE_u)) return
+!    call FillGlobalInput(global_data, UX0) 
+!
+!    UY0(:,:) = def_value   ! atm v momentum
+!    call SetGlobalInput(importState, 'Fwxx_tauy', vm, global_data, rc)
+!    if (ChkErr(rc,__LINE__,u_FILE_u)) return
+!    call FillGlobalInput(global_data, UY0) 
+!PSH TheoryWaves end
 #endif
     ! ---------------
     ! INFLAGS1(5) - atm momentum fields
     ! ---------------
-    if (INFLAGS1(5)) then
-      TU0  = time0       ! times for atm momentum fields.
-      TUN  = timen
-
-      UX0(:,:) = def_value   ! atm u momentum
-      UXN(:,:) = def_value
 !PSH TheoryWaves begin
-      if (state_fldchk(importState, 'Fwxx_taux')) then 
-        call SetGlobalInput(importState, 'Fwxx_taux', vm, global_data, rc)
-        if (ChkErr(rc,__LINE__,u_FILE_u)) return
-        call FillGlobalInput(global_data, UX0) 
-        call FillGlobalInput(global_data, UXN) 
-      end if
-!     if (state_fldchk(importState, 'Faxa_taux')) then
-!       call SetGlobalInput(importState, 'Faxa_taux', vm, global_data, rc)
-!       if (ChkErr(rc,__LINE__,u_FILE_u)) return
-!       call FillGlobalInput(global_data, UX0)
-!       call FillGlobalInput(global_data, UXN)
-!     end if
-!PSH TheoryWaves end
-
-      UY0(:,:) = def_value   ! atm v momentum
-      UYN(:,:) = def_value
-!PSH TheoryWaves begin
-      if (state_fldchk(importState, 'Fwxx_tauy')) then
-        if (ChkErr(rc,__LINE__,u_FILE_u)) return
-        call SetGlobalInput(importState, 'Fwxx_tauy', vm, global_data, rc)
-        if (ChkErr(rc,__LINE__,u_FILE_u)) return
-        call FillGlobalInput(global_data, UY0) 
-        call FillGlobalInput(global_data, UYN) 
-      end if
-!      if (state_fldchk(importState, 'Faxa_tauy')) then
+!    if (INFLAGS1(5)) then
+!      TU0  = time0       ! times for atm momentum fields.
+!      TUN  = timen
+!
+!      UX0(:,:) = def_value   ! atm u momentum
+!      UXN(:,:) = def_value
+!      if (state_fldchk(importState, 'Fwxx_taux')) then 
+!        call SetGlobalInput(importState, 'Fwxx_taux', vm, global_data, rc)
 !        if (ChkErr(rc,__LINE__,u_FILE_u)) return
-!        call SetGlobalInput(importState, 'Faxa_tauy', vm, global_data, rc)
-!        if (ChkErr(rc,__LINE__,u_FILE_u)) return
-!        call FillGlobalInput(global_data, UY0)
-!        call FillGlobalInput(global_data, UYN)
+!        call FillGlobalInput(global_data, UX0) 
+!        call FillGlobalInput(global_data, UXN) 
 !      end if
+!!     if (state_fldchk(importState, 'Faxa_taux')) then
+!!       call SetGlobalInput(importState, 'Faxa_taux', vm, global_data, rc)
+!!       if (ChkErr(rc,__LINE__,u_FILE_u)) return
+!!       call FillGlobalInput(global_data, UX0)
+!!       call FillGlobalInput(global_data, UXN)
+!!     end if
+!
+!      UY0(:,:) = def_value   ! atm v momentum
+!      UYN(:,:) = def_value
+!      if (state_fldchk(importState, 'Fwxx_tauy')) then
+!        if (ChkErr(rc,__LINE__,u_FILE_u)) return
+!        call SetGlobalInput(importState, 'Fwxx_tauy', vm, global_data, rc)
+!        if (ChkErr(rc,__LINE__,u_FILE_u)) return
+!        call FillGlobalInput(global_data, UY0) 
+!        call FillGlobalInput(global_data, UYN) 
+!      end if
+!!      if (state_fldchk(importState, 'Faxa_tauy')) then
+!!        if (ChkErr(rc,__LINE__,u_FILE_u)) return
+!!        call SetGlobalInput(importState, 'Faxa_tauy', vm, global_data, rc)
+!!        if (ChkErr(rc,__LINE__,u_FILE_u)) return
+!!        call FillGlobalInput(global_data, UY0)
+!!        call FillGlobalInput(global_data, UYN)
+!!      end if
+!    end if
 !PSH TheoryWaves end
-    end if
     ! ---------------
     ! INFLAGS1(-7)
     ! ---------------
@@ -610,7 +626,10 @@ contains
 #ifdef W3_CESMCOUPLED
     use w3wdatmd      , only : ASF, UST
     use w3adatmd      , only : USSHX, USSHY, UD, HS
-    use w3idatmd      , only : HSL
+!PSH TheoryWaves begin
+!    use w3idatmd      , only : HSL
+    use w3idatmd      , only : HSL, UX0, UY0, WX0, WY0
+!PSH TheoryWaves end
 #else
     use wmmdatmd      , only : mdse, mdst, wmsetm
 #endif
@@ -694,7 +713,13 @@ contains
 !               / abs(cos(sww-alphal)))
 !           sw_lamult(jsea) = min(5.0, abs(cos(alphal)) * &
 !                              sqrt(1.0+(1.5*laslpj)**(-2)+(5.4_r8*laslpj)**(-4)))
-           sw_lamult(jsea) = EFactor_model(10.,1.,HSL(ix,iy))
+!           sw_lamult(jsea) = EFactor_model(10.,1.,HSL(ix,iy))
+!           sw_lamult(jsea) = SQRT((UX0(ix,iy)**2)+(UY0(ix,iy)**2))
+!           sw_lamult(jsea) = SQRT((WX0(ix,iy)**2)+(WY0(ix,iy)**2))
+           sw_lamult(jsea) = WX0(ix,iy)
+!           sww = SQRT((WX0(ix,iy)**2)+(WY0(ix,iy)**2))
+!           sw_lamult(jsea) = EFactor_model(sww,1.,HSL(ix,iy))
+!           sw_lamult(jsea) = UX0(ix,iy)  
 !PSH end TheoryWaves
         else
           sw_lamult(jsea)  = 1.
