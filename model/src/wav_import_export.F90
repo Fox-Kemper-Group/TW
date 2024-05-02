@@ -716,9 +716,9 @@ contains
 !           sw_lamult(jsea) = EFactor_model(10.,1.,HSL(ix,iy))
 !           sw_lamult(jsea) = SQRT((UX0(ix,iy)**2)+(UY0(ix,iy)**2))
 !           sw_lamult(jsea) = SQRT((WX0(ix,iy)**2)+(WY0(ix,iy)**2))
-           sw_lamult(jsea) = WX0(ix,iy)
-!           sww = SQRT((WX0(ix,iy)**2)+(WY0(ix,iy)**2))
-!           sw_lamult(jsea) = EFactor_model(sww,1.,HSL(ix,iy))
+!           sw_lamult(jsea) = WX0(ix,iy)
+           sww = SQRT((WX0(ix,iy)**2)+(WY0(ix,iy)**2))
+           sw_lamult(jsea) = EFactor_model(sww,1.,HSL(ix,iy))
 !           sw_lamult(jsea) = UX0(ix,iy)  
 !PSH end TheoryWaves
         else
