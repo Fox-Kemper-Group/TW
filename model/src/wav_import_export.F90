@@ -1,4 +1,3 @@
-!> @file wav_import_export
 !!
 !> Manage the import/export state and fields
 !!
@@ -293,6 +292,9 @@ contains
     type(ESMF_State)        :: importState
     type(ESMF_VM)           :: vm
     type(ESMF_Clock)        :: clock
+!PSH TheoryWaves begin
+    integer                 :: n, ix, iy
+!PSH TheoryWaves end
     real(r4)                :: global_data(nsea)
     real(r4), allocatable   :: global_data2(:)
     real(r4)                :: def_value
@@ -491,19 +493,39 @@ contains
     call FillGlobalInput(global_data, HSL)
 !PSH TheoryWaves begin
     ! ---------------
-    ! wind stress
+    ! atm momentum fields
     ! ---------------
-!    UX0(:,:) = def_value   ! atm u momentum
-!    call SetGlobalInput(importState, 'Fwxx_taux', vm, global_data, rc)
-!    if (ChkErr(rc,__LINE__,u_FILE_u)) return
-!    call FillGlobalInput(global_data, UX0) 
-!
-!    UY0(:,:) = def_value   ! atm v momentum
-!    call SetGlobalInput(importState, 'Fwxx_tauy', vm, global_data, rc)
-!    if (ChkErr(rc,__LINE__,u_FILE_u)) return
-!    call FillGlobalInput(global_data, UY0) 
-!PSH TheoryWaves end
-#endif
+    ! ---------------
+    ! wind stress - always assume that this is being imported for CESM
+    ! ---------------
+    HSL(:,:) = def_value
+    if (state_fldchk(importState, 'Fwxx_taux')) then 
+        call SetGlobalInput(importState, 'Fwxx_taux', vm, global_data, rc)
+        if (ChkErr(rc,__LINE__,u_FILE_u)) return
+        call FillGlobalInput(global_data, HSL)
+!        n = 0
+!        do iy = 1,NY 
+!           do ix = 1,NX 
+!              n = n + 1
+!              UX0(ix,iy) = global_data(n) ! wind stress (x-dir)
+!           end do
+!        end do
+    endif
+
+!    UY0(:,:) = def_value
+!    if (state_fldchk(importState, 'Fwxx_tauy')) then 
+!        call SetGlobalInput(importState, 'Fwxx_tauy', vm, global_data, rc)
+!        if (ChkErr(rc,__LINE__,u_FILE_u)) return
+!        n = 0
+!        do iy = 1,NY 
+!           do ix = 1,NX 
+!              n = n + 1
+!              UY0(ix,iy) = global_data(n) ! wind stress (y-di!)
+!           end do
+!        end do
+!    endif
+
+!#endif
     ! ---------------
     ! INFLAGS1(5) - atm momentum fields
     ! ---------------
@@ -511,14 +533,14 @@ contains
 !    if (INFLAGS1(5)) then
 !      TU0  = time0       ! times for atm momentum fields.
 !      TUN  = timen
-!
+
 !      UX0(:,:) = def_value   ! atm u momentum
 !      UXN(:,:) = def_value
-!      if (state_fldchk(importState, 'Fwxx_taux')) then 
-!        call SetGlobalInput(importState, 'Fwxx_taux', vm, global_data, rc)
+!      if (state_fldchk(importState, 'Faxa_taux')) then 
+!        call SetGlobalInput(importState, 'Faxa_taux', vm, global_data, rc)
 !        if (ChkErr(rc,__LINE__,u_FILE_u)) return
 !        call FillGlobalInput(global_data, UX0) 
-!        call FillGlobalInput(global_data, UXN) 
+!!        call FillGlobalInput(global_data, UXN) 
 !      end if
 !!     if (state_fldchk(importState, 'Faxa_taux')) then
 !!       call SetGlobalInput(importState, 'Faxa_taux', vm, global_data, rc)
@@ -528,13 +550,13 @@ contains
 !!     end if
 !
 !      UY0(:,:) = def_value   ! atm v momentum
-!      UYN(:,:) = def_value
+!!      UYN(:,:) = def_value
 !      if (state_fldchk(importState, 'Fwxx_tauy')) then
 !        if (ChkErr(rc,__LINE__,u_FILE_u)) return
 !        call SetGlobalInput(importState, 'Fwxx_tauy', vm, global_data, rc)
 !        if (ChkErr(rc,__LINE__,u_FILE_u)) return
 !        call FillGlobalInput(global_data, UY0) 
-!        call FillGlobalInput(global_data, UYN) 
+!!        call FillGlobalInput(global_data, UYN) 
 !      end if
 !!      if (state_fldchk(importState, 'Faxa_tauy')) then
 !!        if (ChkErr(rc,__LINE__,u_FILE_u)) return
@@ -544,6 +566,7 @@ contains
 !!        call FillGlobalInput(global_data, UYN)
 !!      end if
 !    end if
+#endif
 !PSH TheoryWaves end
     ! ---------------
     ! INFLAGS1(-7)
@@ -716,10 +739,10 @@ contains
 !           sw_lamult(jsea) = EFactor_model(10.,1.,HSL(ix,iy))
 !           sw_lamult(jsea) = SQRT((UX0(ix,iy)**2)+(UY0(ix,iy)**2))
 !           sw_lamult(jsea) = SQRT((WX0(ix,iy)**2)+(WY0(ix,iy)**2))
-!           sw_lamult(jsea) = WX0(ix,iy)
-           sww = SQRT((WX0(ix,iy)**2)+(WY0(ix,iy)**2))
-           sw_lamult(jsea) = EFactor_model(sww,1.,HSL(ix,iy))
-!           sw_lamult(jsea) = UX0(ix,iy)  
+!           sw_lamult(jsea) = WX0(iy,ix)
+!           sww = SQRT((WX0(ix,iy)**2)+(WY0(ix,iy)**2))
+!           sw_lamult(jsea) = EFactor_model(sww,1.,HSL(ix,iy))
+           sw_lamult(jsea) = HSL(ix,iy)  
 !PSH end TheoryWaves
         else
           sw_lamult(jsea)  = 1.
