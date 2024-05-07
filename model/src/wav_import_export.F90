@@ -714,9 +714,10 @@ contains
 !               / abs(cos(sww-alphal)))
 !           sw_lamult(jsea) = min(5.0, abs(cos(alphal)) * &
 !                              sqrt(1.0+(1.5*laslpj)**(-2)+(5.4_r8*laslpj)**(-4)))
-           u10 = SQRT((WX0(ix,iy)**2)+(WY0(ix,iy)**2))
-           ustar = SQRT((UWX(ix,iy)**2)+(UWY(ix,iy)**2))
-           sw_lamult(jsea) = EFactor_model(u10,ustar,HSL(ix,iy))
+!           u10 = SQRT((WX0(ix,iy)**2)+(WY0(ix,iy)**2))
+!           ustar = SQRT((UWX(ix,iy)**2)+(UWY(ix,iy)**2))
+!           sw_lamult(jsea) = EFactor_model(u10,ustar,HSL(ix,iy))
+            sw_lamult(jsea) = LAMULT(isea)
 !PSH end TheoryWaves
         else
           sw_lamult(jsea)  = 1.

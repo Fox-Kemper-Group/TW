@@ -494,6 +494,9 @@ MODULE W3ADATMD
     REAL, POINTER         :: XUSERO(:,:)
     ! Output fileds for Langmuir mixing parameterization
     REAL, POINTER         :: USSHX(:), USSHY(:)
+!PSH TheoryWaves begin
+    REAL, POINTER         :: LAMULT(:)
+!PSH TheoryWaves end
     !
     ! Spatial derivatives
     !
@@ -575,6 +578,9 @@ MODULE W3ADATMD
   !/ Data aliases for structure WADAT(S)
   !/
   REAL, POINTER :: USSHX(:), USSHY(:)
+!PSH TheoryWaves begin
+  REAL, POINTER :: LAMULT(:)
+!PSH TheoryWaves end
   !
   REAL, POINTER           :: CG(:,:), WN(:,:)
   REAL, POINTER           :: IC3WN_R(:,:), IC3WN_I(:,:), IC3CG(:,:)
@@ -1208,6 +1214,9 @@ CONTAINS
          WADATS(IMOD)%TAUICE(NSEALM,2),                       &
          WADATS(IMOD)%USSHX(NSEALM),                          &
          WADATS(IMOD)%USSHY(NSEALM),                          &
+!PSH TheoryWaves begin
+         WADATS(IMOD)%LAMULT(NSEALM),                         &
+!PSH TheoryWaves end
          STAT=ISTAT )
     CHECK_ALLOC_STATUS ( ISTAT )
     !
@@ -1246,6 +1255,9 @@ CONTAINS
     WADATS(IMOD)%TAUICE = UNDEF
     WADATS(IMOD)%USSHX  = UNDEF
     WADATS(IMOD)%USSHY  = UNDEF
+!PSH TheoryWaves begin - not sure this is needed
+!    WADATS(IMOD)%LAMULT  = UNDEF
+!PSH TheoryWaves end
     IF (  P2MSF(1).GT.0 ) WADATS(IMOD)%P2SMS  = UNDEF
     IF (  US3DF(1).GT.0 ) WADATS(IMOD)%US3D   = UNDEF
     IF (  USSPF(1).GT.0 ) WADATS(IMOD)%USSP   = UNDEF
@@ -2930,6 +2942,9 @@ CONTAINS
       WN     => WADATS(IMOD)%WN
       USSHX  => WADATS(IMOD)%USSHX
       USSHY  => WADATS(IMOD)%USSHY
+!PSH TheoryWaves begin
+      LAMULT => WADATS(IMOD)%LAMULT
+!PSH TheoryWaves end
 #ifdef W3_IC3
       IC3WN_R=> WADATS(IMOD)%IC3WN_R
       IC3WN_I=> WADATS(IMOD)%IC3WN_I

@@ -1304,6 +1304,9 @@ CONTAINS
       !                from the coupler)
     USE W3ADATMD, ONLY: USSHX, USSHY
     USE W3IDATMD, ONLY: HSL
+!PSH TheoryWaves begin
+    USE W3IDATMD, ONLY: LAMULT
+!PSH TheoryWaves end
 #ifdef W3_S
     USE W3SERVMD, ONLY: STRACE
 #endif
@@ -1477,6 +1480,9 @@ CONTAINS
     ETUSCY  = 0.
     USSHX  = 0.
     USSHY  = 0.
+!PSH TheoryWaves begin
+    LAMULT = 1.
+!PSH TheoryWaves end
     !
     ! 2.  Integral over discrete part of spectrum ------------------------ *
     !

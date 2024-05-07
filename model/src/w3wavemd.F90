@@ -2322,7 +2322,9 @@ CONTAINS
         !     (Branch point FLDRY, IT=0)
         !
 380     CONTINUE
-
+!PSH TheoryWaves begin
+        CALL TWMODEL (IMOD)
+!PSH TheoryWaves end
 
         IF (IT.NE.NT) THEN
           DTTST  = DSEC21 ( TIME , TCALC )
