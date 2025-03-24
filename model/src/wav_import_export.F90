@@ -270,10 +270,10 @@ contains
     use w3wdatmd    , only: time, w3setw
 #ifdef W3_CESMCOUPLED
     use w3idatmd    , only: HSL
-#else
 !PSH Begin theorywaves
     use w3idatmd    , only: TAUAX, TAUAY
 !PSH End theorywaves
+#else
     use wmupdtmd    , only: wmupd2
     use wmmdatmd    , only: wmsetm
     use wmmdatmd    , only: mdse, mdst, nrgrd, inpmap
