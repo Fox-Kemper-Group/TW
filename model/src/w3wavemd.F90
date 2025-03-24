@@ -491,6 +491,9 @@ CONTAINS
 #ifdef W3_TIMINGS
     USE W3PARALL, only : PRINT_MY_TIME
 #endif
+!PSH begin Theorywaves
+    USE THEORYWAVES
+!PSH end Theorywaves
     use w3iogoncdmd   , only : w3iogoncd
     use w3odatmd      , only : histwr, rstwr, user_netcdf_grdout
     !
