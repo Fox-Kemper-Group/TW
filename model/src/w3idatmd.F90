@@ -96,6 +96,10 @@ MODULE W3IDATMD
   !      FLICE     Log.  Public   Flag for ice input.
   !      HSL       R.A.  Public   Depth of a surface layer over which Stokes
   !                               drift is averaged
+!PSH Begin theorywaves
+  !      TAUAX     R.A.  Public   Cartesian X and Y wind stresses
+  !      TAUAY     R.A.  Public     at the current time
+!PSH End theorywaves
   !      FLTAUA    Log.  Public   Flag for atmospheric momentum input
   !      FLRHOA    Log.  Public   Flag for air density input
   !      INFLAGS1  L.A.  Public   Array consolidating the above six
@@ -220,6 +224,10 @@ MODULE W3IDATMD
 #endif
     REAL, POINTER         :: HSL(:,:)
     LOGICAL               :: IINIT
+!PSH theorywaves begin
+    REAL, POINTER         :: TAUAX(:,:)
+    REAL, POINTER         :: TAUAY(:,:)
+!PSH theorywaves end
 #ifdef W3_WRST
     LOGICAL               :: WRSTIINIT=.FALSE.
 #endif
@@ -270,6 +278,10 @@ MODULE W3IDATMD
        FLLEVRESI, FLCURRESI
 #endif
   REAL , POINTER :: HSL(:,:)
+!PSH begin theorywaves
+  REAL , POINTER :: TAUAX(:,:)
+  REAL , POINTER :: TAUAY(:,:)
+!PSH end theorywaves
   !/
 CONTAINS
   !/ ------------------------------------------------------------------- /
@@ -740,6 +752,12 @@ CONTAINS
     !
     ALLOCATE ( INPUTS(IMOD)%HSL(NX,NY), STAT=ISTAT )
     CHECK_ALLOC_STATUS ( ISTAT )
+!PSH Begin theorywaves
+    ALLOCATE ( INPUTS(IMOD)%TAUAX(NX,NY), STAT=ISTAT )
+    CHECK_ALLOC_STATUS ( ISTAT )
+    ALLOCATE ( INPUTS(IMOD)%TAUAY(NX,NY), STAT=ISTAT )
+    CHECK_ALLOC_STATUS ( ISTAT )
+!PSH End theorywaves
     !
     INPUTS(IMOD)%IINIT  = .TRUE.
     !
@@ -1055,6 +1073,10 @@ CONTAINS
         BERGI  => INPUTS(IMOD)%BERGI
       END IF
       HSL => INPUTS(IMOD)%HSL
+!PSH Begin theorywaves
+      TAUAX => INPUTS(IMOD)%TAUAX
+      TAUAY => INPUTS(IMOD)%TAUAY
+!PSH End theorywaves
       !
       IF ( FLTAUA  ) THEN
         UX0    => INPUTS(IMOD)%UX0
