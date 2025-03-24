@@ -116,6 +116,8 @@ contains
       call fldlist_add(fldsToWav_num, fldsToWav, 'Sa_u'       )
       call fldlist_add(fldsToWav_num, fldsToWav, 'Sa_v'       )
       call fldlist_add(fldsToWav_num, fldsToWav, 'So_bldepth' )
+      call fldlist_add(fldsToWav_num, fldsToWav, 'Fwxx_taux' )
+      call fldlist_add(fldsToWav_num, fldsToWav, 'Fwxx_tauy' )
     else
       call fldlist_add(fldsToWav_num, fldsToWav, 'Sa_u10m'    )
       call fldlist_add(fldsToWav_num, fldsToWav, 'Sa_v10m'    )
@@ -486,6 +488,17 @@ contains
     global_data = max(global_data, 5.)*0.2
     call FillGlobalInput(global_data, HSL)
 #endif
+!PSH Begin theorywaves
+    ! ---------------
+    ! wind stress (atmospheric momentum flux) - always assume that this is being imported for CESM
+    ! ---------------
+    call SetGlobalInput(importState, 'Fwxx_taux', vm, global_data, rc)
+    if (ChkErr(rc,__LINE__,u_FILE_u)) return
+    call FillGlobalInput(global_data, TAUAX) 
+    call SetGlobalInput(importState, 'Fwxx_tauy', vm, global_data, rc)
+    if (ChkErr(rc,__LINE__,u_FILE_u)) return
+    call FillGlobalInput(global_data, TAUAY)
+!PSH End theorywaves
     ! ---------------
     ! INFLAGS1(5) - atm momentum fields
     ! ---------------
