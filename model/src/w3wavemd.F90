@@ -1684,6 +1684,11 @@ CONTAINS
         END IF
 #endif
 
+        !PSH TheoryWaves begin
+        !skip main wave model
+        GOTO 380
+        !PSH TheoryWaves end
+
         !
         ! 3.6 Perform Propagation = = = = = = = = = = = = = = = = = = = = = = =
         ! 3.6.1 Preparations
