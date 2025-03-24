@@ -455,6 +455,7 @@
          'wav_comp_nuopc'    ) modtest=wav_comp_nuopc.o ;;
          'wav_import_export' ) modtest=wav_import_export.o ;;
          'w3iogoncdmd'       ) modtest=w3iogoncdmd.o ;;
+         'theorywaves'       ) modtest=theorywaves.o ;;
          *              ) modfound=no ;;
       esac
 
