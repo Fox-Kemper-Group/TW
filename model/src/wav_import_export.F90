@@ -693,7 +693,7 @@ contains
 !           sw_lamult(jsea) = min(5.0, abs(cos(alphal)) * &
 !                              sqrt(1.0+(1.5*laslpj)**(-2)+(5.4_r8*laslpj)**(-4)))
 !PSH End theorywaves
-          sw_lamult(jsea) = LAMULT(jsea)
+          sw_lamult(jsea) = 5.
         else
 !PSH Begin theorywaves
 !          sw_lamult(jsea)  = 1.
