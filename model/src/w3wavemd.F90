@@ -1684,10 +1684,20 @@ CONTAINS
         END IF
 #endif
 
-        !PSH TheoryWaves begin
-        !skip main wave model
+!PSH TheoryWaves begin
+!calculate mean wave properties and langmuir enhancement
+        do jsea=1, nseal
+          ix  = mapsf(isea,1)
+          iy  = mapsf(isea,2)
+          if( mapsta(iy,ix) .eq. 1) then
+            LAMULT(jsea) = 2.
+          else 
+            LAMULT(jsea) = 1. 
+          endif
+        enddo
+!skip original WWIII wave model
         GOTO 380
-        !PSH TheoryWaves end
+!PSH TheoryWaves end
 
         !
         ! 3.6 Perform Propagation = = = = = = = = = = = = = = = = = = = = = = =

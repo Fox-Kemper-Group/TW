@@ -678,21 +678,27 @@ contains
         iy  = mapsf(isea,2)
         if (mapsta(iy,ix) == 1 .and. HS(jsea) > zero .and. &
             sqrt(USSX(jsea)**2+USSY(jsea)**2)>zero .and. sqrt(USSHX(jsea)**2+USSHY(jsea)**2)>zero ) then
-           sww = atan2(USSHY(jsea),USSHX(jsea)) - UD(isea)
-           alphal = atan( sin(sww) / (                                       &
-                          2.5 * UST(isea)*ASF(isea)*sqrt(dair/dwat)          &
-                        / max(1.e-14_r8, sqrt(USSX(jsea)**2+USSY(jsea)**2))     &
-                        * log(max(1.0, abs(1.25*HSL(ix,iy)/HS(jsea))))       &
-                        + cos(sww)   )                                       &
-                        )
-           lasl = sqrt(ust(isea) * asf(isea) * sqrt(dair/dwat) &
-                                 / sqrt(usshx(jsea)**2 + usshy(jsea)**2 ))
-           laslpj = lasl * sqrt(abs(cos(alphal)) &
-               / abs(cos(sww-alphal)))
-           sw_lamult(jsea) = min(5.0, abs(cos(alphal)) * &
-                              sqrt(1.0+(1.5*laslpj)**(-2)+(5.4_r8*laslpj)**(-4)))
+!PSH Begin theorywaves
+!           sww = atan2(USSHY(jsea),USSHX(jsea)) - UD(isea)
+!           alphal = atan( sin(sww) / (                                       &
+!                          2.5 * UST(isea)*ASF(isea)*sqrt(dair/dwat)          &
+!                        / max(1.e-14_r8, sqrt(USSX(jsea)**2+USSY(jsea)**2))     &
+!                        * log(max(1.0, abs(1.25*HSL(ix,iy)/HS(jsea))))       &
+!                        + cos(sww)   )                                       &
+!                        )
+!           lasl = sqrt(ust(isea) * asf(isea) * sqrt(dair/dwat) &
+!                                 / sqrt(usshx(jsea)**2 + usshy(jsea)**2 ))
+!           laslpj = lasl * sqrt(abs(cos(alphal)) &
+!               / abs(cos(sww-alphal)))
+!           sw_lamult(jsea) = min(5.0, abs(cos(alphal)) * &
+!                              sqrt(1.0+(1.5*laslpj)**(-2)+(5.4_r8*laslpj)**(-4)))
+!PSH End theorywaves
+          sw_lamult(jsea) = LAMULT(jsea)
         else
-          sw_lamult(jsea)  = 1.
+!PSH Begin theorywaves
+!          sw_lamult(jsea)  = 1.
+          sw_lamult(jsea)  = 10.
+!PSH End theorywaves
         endif
       enddo
     end if
