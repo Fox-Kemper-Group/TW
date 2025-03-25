@@ -597,6 +597,9 @@ contains
 
     use wav_kind_mod,   only : R8 => SHR_KIND_R8
     use w3adatmd      , only : USSX, USSY, USSP
+!PSH Begin theorywaves
+    use w3adatmd      , only : LAMULT
+!PSH End theorywaves
     use w3adatmd      , only : w3seta
     use w3idatmd      , only : w3seti
     use w3wdatmd      , only : va, w3setw

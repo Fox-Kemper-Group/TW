@@ -195,6 +195,9 @@ MODULE W3ADATMD
   !      CFLXYMAX  R.A.  Public   Max. CFL number for spatial advection.
   !      CFLTHMAX  R.A.  Public   Max. CFL number for refraction.
   !      CFLKMAX   R.A.  Public   Max. CFL number for wavenumber shift.
+!PSH Begin theorywaves
+  !      LAMULT    R.A.  Public   Langmuir multiplier
+!PSH End theorywaves 
   !
   !    Orphans, commented out here, now automatic arrays in W3WAVE, ....
   !
@@ -455,6 +458,9 @@ MODULE W3ADATMD
          USSY(:), TAUOCX(:), TAUOCY(:),      &
          PRMS(:),  TPMS(:), PHICE(:),        &
          TAUICE(:,:)
+!PSH Begin theorywaves
+    REAL, POINTER         ::  LAMULT(:)
+!PSH End theorywaves
     REAL, POINTER         ::  P2SMS(:,:),  US3D(:,:), USSP(:,:)
     REAL, POINTER         :: XSXX(:), XSYY(:), XSXY(:), XTAUOX(:),&
          XTAUOY(:), XBHD(:), XPHIOC(:),       &
@@ -613,6 +619,9 @@ MODULE W3ADATMD
        TUSX(:), TUSY(:), USSX(:), USSY(:),  &
        TAUOCX(:), TAUOCY(:), PRMS(:),       &
        TPMS(:), PHICE(:), TAUICE(:,:)
+!PSH Begin theorywaves
+  REAL, POINTER           :: LAMULT(:)
+!PSH End theorywaves
   REAL, POINTER           :: P2SMS(:,:), US3D(:,:), USSP(:,:)
   !
   REAL, POINTER           :: ABA(:), ABD(:), UBA(:), UBD(:),      &
@@ -1210,6 +1219,13 @@ CONTAINS
          WADATS(IMOD)%USSHY(NSEALM),                          &
          STAT=ISTAT )
     CHECK_ALLOC_STATUS ( ISTAT )
+
+
+!PSH Begin theorywaves
+    ALLOCATE ( WADATS(IMOD)%LAMULT   (NSEALM) ,               &
+         STAT=ISTAT )
+    CHECK_ALLOC_STATUS ( ISTAT )
+!PSH End theorywaves
     !
     ! For the 3D arrays: the allocation is performed only if these arrays are allowed
     !                    by specific variables defined through the mod_def file
@@ -1249,6 +1265,10 @@ CONTAINS
     IF (  P2MSF(1).GT.0 ) WADATS(IMOD)%P2SMS  = UNDEF
     IF (  US3DF(1).GT.0 ) WADATS(IMOD)%US3D   = UNDEF
     IF (  USSPF(1).GT.0 ) WADATS(IMOD)%USSP   = UNDEF
+
+!PSH Begin theorywaves
+    WADATS(IMOD)%LAMULT = UNDEF
+!PSH End theorywaves
 
     call print_memcheck(memunit, 'memcheck_____:'//' W3DIMA 6')
     !
