@@ -676,9 +676,10 @@ contains
         call init_get_isea(isea, jsea)
         ix  = mapsf(isea,1)
         iy  = mapsf(isea,2)
-        if (mapsta(iy,ix) == 1 .and. HS(jsea) > zero .and. &
-            sqrt(USSX(jsea)**2+USSY(jsea)**2)>zero .and. sqrt(USSHX(jsea)**2+USSHY(jsea)**2)>zero ) then
 !PSH Begin theorywaves
+        if (mapsta(iy,ix) == 1 ) then
+!        if (mapsta(iy,ix) == 1 .and. HS(jsea) > zero .and. &
+!            sqrt(USSX(jsea)**2+USSY(jsea)**2)>zero .and. sqrt(USSHX(jsea)**2+USSHY(jsea)**2)>zero ) then
 !           sww = atan2(USSHY(jsea),USSHX(jsea)) - UD(isea)
 !           alphal = atan( sin(sww) / (                                       &
 !                          2.5 * UST(isea)*ASF(isea)*sqrt(dair/dwat)          &
