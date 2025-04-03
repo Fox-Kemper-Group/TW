@@ -485,7 +485,10 @@ contains
     if (ChkErr(rc,__LINE__,u_FILE_u)) return
 
     ! ocn mixing layer depth
-    global_data = max(global_data, 5.)*0.2
+!PSH Begin theorywaves
+!    global_data = max(global_data, 5.)*0.2
+    global_data = max(global_data, 5.)
+!PSH End theorywaves
     call FillGlobalInput(global_data, HSL)
 #endif
 !PSH Begin theorywaves
@@ -598,7 +601,7 @@ contains
     use wav_kind_mod,   only : R8 => SHR_KIND_R8
     use w3adatmd      , only : USSX, USSY, USSP
 !PSH Begin theorywaves
-    use w3adatmd      , only : LAMULT
+    use w3adatmd      , only : lamult
 !PSH End theorywaves
     use w3adatmd      , only : w3seta
     use w3idatmd      , only : w3seti
@@ -680,25 +683,11 @@ contains
         if (mapsta(iy,ix) == 1 ) then
 !        if (mapsta(iy,ix) == 1 .and. HS(jsea) > zero .and. &
 !            sqrt(USSX(jsea)**2+USSY(jsea)**2)>zero .and. sqrt(USSHX(jsea)**2+USSHY(jsea)**2)>zero ) then
-!           sww = atan2(USSHY(jsea),USSHX(jsea)) - UD(isea)
-!           alphal = atan( sin(sww) / (                                       &
-!                          2.5 * UST(isea)*ASF(isea)*sqrt(dair/dwat)          &
-!                        / max(1.e-14_r8, sqrt(USSX(jsea)**2+USSY(jsea)**2))     &
-!                        * log(max(1.0, abs(1.25*HSL(ix,iy)/HS(jsea))))       &
-!                        + cos(sww)   )                                       &
-!                        )
-!           lasl = sqrt(ust(isea) * asf(isea) * sqrt(dair/dwat) &
-!                                 / sqrt(usshx(jsea)**2 + usshy(jsea)**2 ))
-!           laslpj = lasl * sqrt(abs(cos(alphal)) &
-!               / abs(cos(sww-alphal)))
-!           sw_lamult(jsea) = min(5.0, abs(cos(alphal)) * &
-!                              sqrt(1.0+(1.5*laslpj)**(-2)+(5.4_r8*laslpj)**(-4)))
 !PSH End theorywaves
-          sw_lamult(jsea) = 5.
+          sw_lamult(jsea) = lamult(jsea)
         else
 !PSH Begin theorywaves
-!          sw_lamult(jsea)  = 1.
-          sw_lamult(jsea)  = 10.
+          sw_lamult(jsea)  = 1.
 !PSH End theorywaves
         endif
       enddo
@@ -790,6 +779,7 @@ contains
       if (ChkErr(rc,__LINE__,u_FILE_u)) return
       call CalcRadstr2D( va, sxxn, sxyn, syyn)
     end if
+
     if (wav_coupling_to_cice) then
       call state_getfldptr(exportState, 'Sw_elevation_spectrum', wave_elevation_spectrum, rc=rc)
       if (ChkErr(rc,__LINE__,u_FILE_u)) return
@@ -808,16 +798,27 @@ contains
       sw_pstokes_x(:,:) = fillvalue
       sw_pstokes_y(:,:) = fillvalue
       if (USSPF(1) > 0) then ! Partitioned Stokes drift computation is turned on in mod_def file.
-        call CALC_U3STOKES(va, 2)
+!PSH Begin Theorywaves
+!        call CALC_U3STOKES(va, 2)
+!        do ib = 1, USSPF(2)
+!          do jsea = 1, nseal_cpl
+!            call init_get_isea(isea, jsea)
+!            ix  = mapsf(isea,1)
+!            iy  = mapsf(isea,2)
+!            sw_pstokes_x(ib,jsea) = ussp(jsea,ib)
+!            sw_pstokes_y(ib,jsea) = ussp(jsea,nk+ib)
+!          enddo
+!        end do
         do ib = 1, USSPF(2)
           do jsea = 1, nseal_cpl
             call init_get_isea(isea, jsea)
             ix  = mapsf(isea,1)
             iy  = mapsf(isea,2)
-            sw_pstokes_x(ib,jsea) = ussp(jsea,ib)
-            sw_pstokes_y(ib,jsea) = ussp(jsea,nk+ib)
+            sw_pstokes_x(ib,jsea) = 4.
+            sw_pstokes_y(ib,jsea) = 2.
           enddo
         end do
+!PSH End Theorywaves
       end if
     endif
 
