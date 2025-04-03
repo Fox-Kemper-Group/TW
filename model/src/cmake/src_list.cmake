@@ -58,6 +58,7 @@ set(ftn_src
   wav_grdout.F90
   w3iogoncdmd.F90
   wav_shr_flags.F90
+  theorywaves.F90
   )
 
 set(nuopc_mesh_cap_src
