@@ -1685,16 +1685,6 @@ CONTAINS
 #endif
 
 !PSH TheoryWaves begin
-!calculate mean wave properties and langmuir enhancement
-        do jsea=1, nseal
-          ix  = mapsf(isea,1)
-          iy  = mapsf(isea,2)
-!          if( mapsta(iy,ix) .eq. 1) then
-!            LAMULT(jsea) = 2.
-!          else 
-!            LAMULT(jsea) = 1. 
-!          endif
-        enddo
 !skip original WWIII wave model
         GOTO 380
 !PSH TheoryWaves end
@@ -2330,6 +2320,7 @@ CONTAINS
         !     (Branch point FLDRY, IT=0)
         !
 380     CONTINUE
+
         !
         IF (IT.NE.NT) THEN
           DTTST  = DSEC21 ( TIME , TCALC )
@@ -2435,7 +2426,9 @@ CONTAINS
           do_w3outg = .true.
         end if
         if (do_w3outg) then
-          CALL W3OUTG ( VA, FLPFLD, FLOUTG, FLOUTG2 )
+!PSH Begin TheoryWaves
+!          CALL W3OUTG ( VA, FLPFLD, FLOUTG, FLOUTG2 )
+!PSH End TheoryWaves
         end if
         !
 #ifdef W3_MPI
