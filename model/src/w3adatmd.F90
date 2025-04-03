@@ -468,6 +468,9 @@ MODULE W3ADATMD
          XUSSY(:), XTAUOCX(:), XTAUOCY(:),    &
          XPRMS(:), XTPMS(:), XPHICE(:),       &
          XTAUICE(:,:)
+!PSH Begin theorywaves
+    REAL, POINTER         ::  XLAMULT(:)
+!PSH End theorywaves
     REAL, POINTER         :: XP2SMS(:,:), XUS3D(:,:), XUSSP(:,:)
     REAL, POINTER         :: XUSSHX(:), XUSSHY(:)
     !
@@ -1215,16 +1218,17 @@ CONTAINS
          WADATS(IMOD)%TPMS  (NSEALM) ,                        &
          WADATS(IMOD)%PHICE (NSEALM) ,                        &
          WADATS(IMOD)%TAUICE(NSEALM,2),                       &
-         WADATS(IMOD)%USSHX(NSEALM),                          &
-         WADATS(IMOD)%USSHY(NSEALM),                          &
+         WADATS(IMOD)%USSHX (NSEALM),                         &
+         WADATS(IMOD)%USSHY (NSEALM),                         &
+         WADATS(IMOD)%LAMULT(NSEALM),                         &
          STAT=ISTAT )
     CHECK_ALLOC_STATUS ( ISTAT )
 
 
 !PSH Begin theorywaves
-    ALLOCATE ( WADATS(IMOD)%LAMULT   (NSEALM) ,               &
-         STAT=ISTAT )
-    CHECK_ALLOC_STATUS ( ISTAT )
+!    ALLOCATE ( WADATS(IMOD)%LAMULT   (NSEALM) ,               &
+!         STAT=ISTAT )
+!    CHECK_ALLOC_STATUS ( ISTAT )
 !PSH End theorywaves
     !
     ! For the 3D arrays: the allocation is performed only if these arrays are allowed
@@ -1262,13 +1266,12 @@ CONTAINS
     WADATS(IMOD)%TAUICE = UNDEF
     WADATS(IMOD)%USSHX  = UNDEF
     WADATS(IMOD)%USSHY  = UNDEF
-    IF (  P2MSF(1).GT.0 ) WADATS(IMOD)%P2SMS  = UNDEF
-    IF (  US3DF(1).GT.0 ) WADATS(IMOD)%US3D   = UNDEF
-    IF (  USSPF(1).GT.0 ) WADATS(IMOD)%USSP   = UNDEF
-
 !PSH Begin theorywaves
     WADATS(IMOD)%LAMULT = UNDEF
 !PSH End theorywaves
+    IF (  P2MSF(1).GT.0 ) WADATS(IMOD)%P2SMS  = UNDEF
+    IF (  US3DF(1).GT.0 ) WADATS(IMOD)%US3D   = UNDEF
+    IF (  USSPF(1).GT.0 ) WADATS(IMOD)%USSP   = UNDEF
 
     call print_memcheck(memunit, 'memcheck_____:'//' W3DIMA 6')
     !
@@ -2192,6 +2195,15 @@ CONTAINS
       ALLOCATE ( WADATS(IMOD)%XUSSHY(1), STAT=ISTAT )
       CHECK_ALLOC_STATUS ( ISTAT )
     END IF
+!PSH Begin theorywaves
+    IF ( OUTFLAGS( 6, 15) ) THEN
+      ALLOCATE ( WADATS(IMOD)%XLAMULT(NXXX), STAT=ISTAT )
+      CHECK_ALLOC_STATUS ( ISTAT )
+    ELSE
+      ALLOCATE ( WADATS(IMOD)%XLAMULT(1), STAT=ISTAT )
+      CHECK_ALLOC_STATUS ( ISTAT )
+    END IF
+!PSH End theorywaves
     !
     WADATS(IMOD)%XSXX    = UNDEF
     WADATS(IMOD)%XSYY    = UNDEF
@@ -2213,8 +2225,11 @@ CONTAINS
     WADATS(IMOD)%XUSSP   = UNDEF
     WADATS(IMOD)%XTAUOCX = UNDEF
     WADATS(IMOD)%XTAUOCY = UNDEF
-    WADATS(IMOD)%XUSSHX   = UNDEF
-    WADATS(IMOD)%XUSSHY   = UNDEF
+    WADATS(IMOD)%XUSSHX  = UNDEF
+    WADATS(IMOD)%XUSSHY  = UNDEF
+!PSH Begin theorywaves
+    WADATS(IMOD)%XLAMULT = UNDEF
+!PSH End theorywaves
     !
     IF ( OUTFLAGS( 7, 1) ) THEN
       ALLOCATE ( WADATS(IMOD)%XABA(NXXX), STAT=ISTAT )
@@ -2923,6 +2938,10 @@ CONTAINS
       USSP   => WADATS(IMOD)%USSP
       TAUOCX => WADATS(IMOD)%TAUOCX
       TAUOCY => WADATS(IMOD)%TAUOCY
+!PSH Begin theorywaves
+      LAMULT => WADATS(IMOD)%LAMULT
+!PSH End theorywaves
+
       !
       ABA    => WADATS(IMOD)%ABA
       ABD    => WADATS(IMOD)%ABD
@@ -3264,6 +3283,9 @@ CONTAINS
       USSP   => WADATS(IMOD)%XUSSP
       TAUOCX => WADATS(IMOD)%XTAUOCX
       TAUOCY => WADATS(IMOD)%XTAUOCY
+!PSH Begin theorywaves
+      LAMULT => WADATS(IMOD)%XLAMULT
+!PSH End theorywaves 
       ABA    => WADATS(IMOD)%XABA
       ABD    => WADATS(IMOD)%XABD
       UBA    => WADATS(IMOD)%XUBA
