@@ -679,16 +679,10 @@ contains
         call init_get_isea(isea, jsea)
         ix  = mapsf(isea,1)
         iy  = mapsf(isea,2)
-!PSH Begin theorywaves
         if (mapsta(iy,ix) == 1 ) then
-!        if (mapsta(iy,ix) == 1 .and. HS(jsea) > zero .and. &
-!            sqrt(USSX(jsea)**2+USSY(jsea)**2)>zero .and. sqrt(USSHX(jsea)**2+USSHY(jsea)**2)>zero ) then
-!PSH End theorywaves
           sw_lamult(jsea) = lamult(jsea)
         else
-!PSH Begin theorywaves
           sw_lamult(jsea)  = 1.
-!PSH End theorywaves
         endif
       enddo
     end if
@@ -785,7 +779,9 @@ contains
       if (ChkErr(rc,__LINE__,u_FILE_u)) return
       ! Initialize wave elevation spectrum
       wave_elevation_spectrum(:,:) = fillvalue
-      call CalcEF(va, wave_elevation_spectrum)
+!PSH Begin theorywaves
+!      call CalcEF(va, wave_elevation_spectrum)
+!PSH End theorywaves
     end if
 
     if ( state_fldchk(exportState, 'Sw_pstokes_x') .and. &
@@ -798,17 +794,6 @@ contains
       sw_pstokes_x(:,:) = fillvalue
       sw_pstokes_y(:,:) = fillvalue
       if (USSPF(1) > 0) then ! Partitioned Stokes drift computation is turned on in mod_def file.
-!PSH Begin Theorywaves
-!        call CALC_U3STOKES(va, 2)
-!        do ib = 1, USSPF(2)
-!          do jsea = 1, nseal_cpl
-!            call init_get_isea(isea, jsea)
-!            ix  = mapsf(isea,1)
-!            iy  = mapsf(isea,2)
-!            sw_pstokes_x(ib,jsea) = ussp(jsea,ib)
-!            sw_pstokes_y(ib,jsea) = ussp(jsea,nk+ib)
-!          enddo
-!        end do
         do ib = 1, USSPF(2)
           do jsea = 1, nseal_cpl
             call init_get_isea(isea, jsea)
@@ -818,7 +803,6 @@ contains
             sw_pstokes_y(ib,jsea) = 2.
           enddo
         end do
-!PSH End Theorywaves
       end if
     endif
 
