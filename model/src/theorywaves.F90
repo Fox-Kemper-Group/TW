@@ -11,7 +11,7 @@
 !> @author Paul Hall @date 6-May-2024 
 !>
 
-MODULE THEORYWAVES
+MODULE theorywaves
   !/
   !/                  +-----------------------------------+
   !/                  | THEORYWAVES                       |
@@ -66,8 +66,12 @@ MODULE THEORYWAVES
 !  use wav_import_export     , only : nseal_cpl
   !module default
   implicit none
+  private
   !
-  PUBLIC
+  !PUBLIC
+  !
+  public :: twmodel
+  !
   !/
 CONTAINS
   !/ ------------------------------------------------------------------- /
@@ -96,7 +100,7 @@ CONTAINS
   !>
   !> @author H. L. Tolman  @date 22-Mar-2021
   !>
-  SUBROUTINE TWMODEL ( IMOD )
+  SUBROUTINE twmodel ( imod )
     !/
     !/                  +-----------------------------------+
     !/                  | THEORYWAVES                       |
@@ -163,11 +167,15 @@ CONTAINS
     !     ----------------------------------------------------------- 
     use CONSTANTS     , only : GRAV, PI
     use w3gdatmd      , only : nseal, mapsf, MAPSTA, USSPF, NK, w3setg, nsea
-    use w3idatmd      , only : HSL, UWX, UWY
+!    use w3idatmd      , only : HSL, UWX, UWY
+    use w3idatmd      , only : hsl 
     use w3idatmd      , only : WX0, WY0
-!PSH begin 250324
-!    use w3adatmd      , only : LAMULT
-!PSH end 250324
+    use w3idatmd      , only : tauax, tauay
+    use w3adatmd      , only : hs, fp0, t02, t0m1, t01, thm
+    use w3adatmd      , only : lamult, ussx, ussy
+
+    use wav_import_export     , only : nseal_cpl
+
     !/
     !/ ------------------------------------------------------------------- /
     !/ Parameter list
@@ -179,210 +187,128 @@ CONTAINS
     !/
 ! !DEFINED PARAMETERS:
 
-  ! Kind Types:
-  ! Use double precision for floating point computations.
-!  integer, parameter :: tw_r8       = selected_real_kind(15, 307)
-
   ! Global parameters:
-  ! The constant 1 is used repeatedly. 
-  ! The value for pi is needed.
-!  real(tw_r8), parameter :: tw_zero = real(0,tw_r8),         &
-!                            tw_one  = real(1,tw_r8)
-!  real(tw_r8), parameter :: PI      = &
-!                               3.14159265358979323846_tw_r8
-!  real(tw_r8), parameter :: Gravity = &
-!                               9.80616_tw_r8
     real, parameter         :: ZERO = 0.
     real, parameter         :: ONE = 1.
+    real, parameter         :: rhowtw = 1025.
+    real, parameter         :: u19p5_to_u10 = 1.075
+    real, parameter         :: fm_to_fp = 1.296
+    real, parameter         :: us_to_u10 = 0.0162
+    real, parameter         :: r_loss = 0.667 
+
     integer                 :: n, jsea, isea, ix, iy, ib
     real                    :: sww, langmt, lasl, laslpj, alphal
-    real                    :: u10, ustar
-!    do jsea=1, nseal_cpl
-!    do jsea=1, nseal
-!     call init_get_isea(isea, jsea)
+    real                    :: u10, ustar, u10dir
+    real                    :: wx, wy
+    real                    :: us, hm0, fm, fp, vstokes, kphil, kstar
+    real                    :: z0, z0i, r1, r2, r3, r4, tmp
+    real                    :: ustokes_SL_model
+    real                    :: us_sl, lasl_sqr_i
+    real                    :: EFactor
 
-!PSH begin 250324
-!PSH commented out the lines below
-!     do isea=1, 5000 
-!      ix  = mapsf(isea,1)
-!      iy  = mapsf(isea,2)
-!      if (mapsta(iy,ix) == 1) then 
-!PSH end 250324
-!PSH begin TheoryWaves
-!        if (mapsta(iy,ix) == 1 .and. HS(jsea) > zero .and. &
-!            sqrt(USSX(jsea)**2+USSY(jsea)**2)>zero .and. sqrt(USSHX(jsea)**2+USSHY(jsea)**2)>zero ) then
-!           sww = atan2(USSHY(jsea),USSHX(jsea)) - UD(isea)
-!           alphal = atan( sin(sww) / (                                       &
-!                          2.5 * UST(isea)*ASF(isea)*sqrt(dair/dwat)          &
-!                        / max(1.e-14_r8, sqrt(USSX(jsea)**2+USSY(jsea)**2))     &
-!                        * log(max(1.0, abs(1.25*HSL(ix,iy)/HS(jsea))))       &
-!                        + cos(sww)   )                                       &
-!                        )
-!           lasl = sqrt(ust(isea) * asf(isea) * sqrt(dair/dwat) &
-!                                 / sqrt(usshx(jsea)**2 + usshy(jsea)**2 ))
-!           laslpj = lasl * sqrt(abs(cos(alphal)) &
-!               / abs(cos(sww-alphal)))
-!           sw_lamult(jsea) = min(5.0, abs(cos(alphal)) * &
-!                              sqrt(1.0+(1.5*laslpj)**(-2)+(5.4_r8*laslpj)**(-4)))
-!           u10 = SQRT((WX0(ix,iy)**2)+(WY0(ix,iy)**2))
-!           ustar = SQRT((UWX(ix,iy)**2)+(UWY(ix,iy)**2))
-!           sw_lamult(jsea) = EFactor_model(u10,ustar,HSL(ix,iy))
-!            sw_lamult(jsea) = isea*0.1
-!        LAMULT(jsea) = isea*0.1
-!PSH begin 250324
-!PSH commented out the lines below
-!        LAMULT(isea) = isea*0.1
-!PSH end TheoryWaves
-!      else
-!        LAMULT(isea) = 1.
-!!        LAMULT(jsea) = 1.
-!      endif
-!    enddo
-!PSH end 250324
+    do jsea=1, nseal_cpl
+     call init_get_isea(isea, jsea)
+     ix  = mapsf(isea,1)
+     iy  = mapsf(isea,2)
+     if (mapsta(iy,ix) == 1) then
+!       wx = wx0(ix,iy)
+!       wy = wy0(ix,iy)
+       u10 = SQRT((wx0(ix,iy)**2)+(wy0(ix,iy)**2))
+!       u10 = sqrt((wx**2)+(wy**2))
+       u10dir = atan2(wy0(ix,iy),wx0(ix,iy))
+!       u10dir = atan2(wy,wx)
+       ustar = sqrt(((tauax(ix,iy)**2)+(tauay(ix,iy)**2))/rhowtw)
+       
+       if (u10 .gt. ZERO .and. ustar .gt. ZERO) then
+         ! surface Stokes drift
+         us = us_to_u10*u10
+         !
+         ! significant wave height from Pierson-Moskowitz
+         ! spectrum (Bouws, 1998)
+         hm0 = 0.0246*u10**2
+!         hs(jsea) = hm0
+         !
+         ! peak frequency (PM, Bouws, 1998)
+         tmp = 2.0*PI*u19p5_to_u10*u10
+         fp = 0.877*GRAV/tmp
+         !
+         ! mean frequency
+         fm = fm_to_fp*fp
+         !
+         ! total Stokes transport (a factor r_loss is applied to account
+         !  for the effect of directional spreading, multidirectional waves
+         !  and the use of PM peak frequency and PM significant wave height
+         !  on estimating the Stokes transport)
+         vstokes = 0.125*PI*r_loss*fm*hm0**2
+         !
+         ! the general peak wavenumber for Phillips' spectrum
+         ! (Breivik et al., 2016) with correction of directional spreading
+         kphil = 0.176*us/vstokes
+         !
+         ! surface layer averaged Stokes dirft with Stokes drift profile
+         ! estimated from Phillips' spectrum (Breivik et al., 2016)
+         ! the directional spreading effect from Webb and Fox-Kemper, 2015
+         ! is also included
+         kstar = kphil*2.56
+         ! surface layer
+         z0 = 0.2*abs(hsl(ix,iy))
+         z0i = ONE/z0
+         ! term 1 to 4
+         r1 = (0.151/kphil*z0i-0.84) &
+               *(ONE-exp(-2.0*kphil*z0))
+         r2 = -(0.84+0.0591/kphil*z0i) &
+               *sqrt(2.0*PI*kphil*z0) &
+               *erfc(sqrt(2.0*kphil*z0))
+         r3 = (0.0632/kstar*z0i+0.125) &
+               *(ONE-exp(-2.0*kstar*z0))
+         r4 = (0.125+0.0946/kstar*z0i) &
+               *sqrt(2.0*PI*kstar*z0) &
+               *erfc(sqrt(2.0*kstar*z0))
+         ! surface layer averaged Stokes drift 
+         us_sl = us*(0.715+r1+r2+r3+r4)
+         !
+         ! LaSL^{-2}
+         lasl_sqr_i = us_sl/ustar
+         !
+         ! enhancement factor (Li et al., 2016)
+         EFactor = sqrt(ONE &
+                  +ONE/1.5**2*lasl_sqr_i &
+                  +ONE/5.4**4*lasl_sqr_i**2)
+!         EFactor = 2.
+       else
+         fm = ONE
+         fp = ZERO
+         hm0 = ZERO
+         us_sl = ZERO
+         
+         EFactor = ONE
+       endif
+     else
+       u10 = ZERO
+       u10dir = ZERO
+       ustar = ZERO
 
-!      do jsea=1, nseal_cpl
-!      do jsea=1, nseal
-!        call init_get_isea(isea, jsea)
-!        ix  = mapsf(isea,1)
-!        iy  = mapsf(isea,2)
-!        if (mapsta(iy,ix) == 1) then 
-!           
-!!           u10 = SQRT((WX0(ix,iy)**2)+(WY0(ix,iy)**2))
-!!           ustar = SQRT((UWX(ix,iy)**2)+(UWY(ix,iy)**2))
-!!           sw_lamult(jsea) = EFactor_model(u10,ustar,HSL(ix,iy))
-!           LAMULT(jsea) = 4.2
-!        else 
-!           LAMULT(jsea)  = 1. 
-!        endif
-!      enddo
-!    end if
+       fm = ONE
+       fp = ZERO
+       hm0 = ZERO
+       us_sl = ZERO
 
-!EOC
+       EFactor = ONE
+     endif
+     ! wave diagnostics
+     fp0(jsea) = fp
+     hs(jsea) = hm0
+     t01(jsea) = ONE/fm
+     t0m1(jsea) = ONE/fm
+     t02(jsea) = ONE/fm
+     thm(jsea) = u10dir 
+     ussx(jsea) = us_sl*cos(u10dir)
+     ussy(jsea) = us_sl*sin(u10dir)
 
-!  function EFactor_model(u10, ustar, hbl)
-!
-!! This function returns the enhancement factor, given the 10-meter
-!! wind (m/s), friction velocity (m/s) and the boundary layer depth (m).
-!!
-!! Qing Li, 160606
-!
-!! Input
-!!    real(tw_r8), intent(in) :: &
-!!        ! 10 meter wind (m/s)
-!!        u10, &
-!!        ! water-side surface friction velocity (m/s)
-!!        ustar, &
-!!        ! boundary layer depth (m)
-!!        hbl
-!    REAL, intent(in) :: u10, ustar, hbl
-!
-!! Local variables
-!!    real(tw_r8) :: us_sl, lasl_sqr_i
-!!    real(tw_r8) :: EFactor_model
-!    REAL :: us_sl, lasl_sqr_i
-!    REAL :: EFactor_model
-!
-!    if (u10 .gt. ZERO .and. ustar .gt. ZERO) then
-!      ! surface layer averaged Stokes drift
-!      us_sl = ustokes_SL_model(u10, hbl)
-!      !
-!      ! LaSL^{-2}
-!      lasl_sqr_i = us_sl/ustar
-!      !
-!      ! enhancement factor (Li et al., 2016)
-!      EFactor_model = sqrt(ONE &
-!                 +ONE/1.5**2*lasl_sqr_i &
-!                 +ONE/5.4**4*lasl_sqr_i**2)
-!    else
-!      ! otherwise set to one
-!      EFactor_model = ONE
-!    endif
-!
-!  end function EFactor_model
-!  function ustokes_SL_model(u10, hbl)
-!
-!! This function returns the surface layer averaged Stokes drift, given
-!! the 10-meter wind (m/s) and the boundary layer depth (m).
-!!
-!! Qing Li, 20180130
-!
-!! Input
-!!    real(tw_r8), intent(in) :: &
-!!        ! 10 meter wind (m/s)
-!!        u10, &
-!!        ! boundary layer depth (m)
-!!        hbl
-!    REAL :: u10, hbl
-!! Local variables
-!    ! parameters
-!    REAL, parameter :: &
-!        ! ratio of U19.5 to U10 (Holthuijsen, 2007)
-!        u19p5_to_u10 = 1.075, &
-!        ! ratio of mean frequency to peak frequency for
-!        ! Pierson-Moskowitz spectrum (Webb, 2011)
-!        fm_to_fp = 1.296, &
-!        ! ratio of surface Stokes drift to U10
-!        us_to_u10 = 0.0162, &
-!        ! loss ratio of Stokes transport
-!        r_loss = 0.667
-!
-!!    real(tw_r8) :: us, hm0, fm, fp, vstokes, kphil, kstar
-!!    real(tw_r8) :: z0, z0i, r1, r2, r3, r4, tmp
-!!    real(tw_r8) :: ustokes_SL_model
-!    REAL :: us, hm0, fm, fp, vstokes, kphil, kstar
-!    REAL :: z0, z0i, r1, r2, r3, r4, tmp
-!    REAL :: ustokes_SL_model
-!
-!    if (u10 .gt. ZERO) then
-!      ! surface Stokes drift
-!      us = us_to_u10*u10
-!      !
-!      ! significant wave height from Pierson-Moskowitz
-!      ! spectrum (Bouws, 1998)
-!      hm0 = 0.0246*u10**2
-!      !
-!      ! peak frequency (PM, Bouws, 1998)
-!      tmp = 2.0*PI*u19p5_to_u10*u10
-!      fp = 0.877*GRAV/tmp
-!      !
-!      ! mean frequency
-!      fm = fm_to_fp*fp
-!      !
-!      ! total Stokes transport (a factor r_loss is applied to account
-!      !  for the effect of directional spreading, multidirectional waves
-!      !  and the use of PM peak frequency and PM significant wave height
-!      !  on estimating the Stokes transport)
-!      vstokes = 0.125*PI*r_loss*fm*hm0**2
-!      !
-!      ! the general peak wavenumber for Phillips' spectrum
-!      ! (Breivik et al., 2016) with correction of directional spreading
-!      kphil = 0.176*us/vstokes
-!      !
-!      ! surface layer averaged Stokes dirft with Stokes drift profile
-!      ! estimated from Phillips' spectrum (Breivik et al., 2016)
-!      ! the directional spreading effect from Webb and Fox-Kemper, 2015
-!      ! is also included
-!      kstar = kphil*2.56
-!      ! surface layer
-!      z0 = 0.2*abs(hbl)
-!      z0i = ONE/z0
-!      ! term 1 to 4
-!      r1 = (0.151/kphil*z0i-0.84) &
-!            *(ONE-exp(-2.0*kphil*z0))
-!      r2 = -(0.84+0.0591/kphil*z0i) &
-!             *sqrt(2.0*PI*kphil*z0) &
-!             *erfc(sqrt(2.0*kphil*z0))
-!      r3 = (0.0632/kstar*z0i+0.125) &
-!            *(ONE-exp(-2.0*kstar*z0))
-!      r4 = (0.125+0.0946/kstar*z0i) &
-!             *sqrt(2.0*PI*kstar*z0) &
-!             *erfc(sqrt(2.0*kstar*z0))
-!      ustokes_SL_model = us*(0.715+r1+r2+r3+r4)
-!    else
-!      ustokes_SL_model = ZERO
-!    endif
-!
-!    end function ustokes_SL_model
-!
-  end subroutine TWMODEL
-END MODULE THEORYWAVES
+     ! to be passed to mediator     
+     lamult(jsea) = EFactor
+    enddo
+
+  end subroutine twmodel
+
+END MODULE theorywaves
