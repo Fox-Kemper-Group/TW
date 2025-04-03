@@ -1011,7 +1011,9 @@ contains
     use wav_import_export , only : import_fields, export_fields
     use wav_shel_inp      , only : odat
     use w3odatmd          , only : rstwr, histwr
-
+!PSH Begin theorywaves
+    use theorywaves
+!PSH End theorywaves
     ! arguments:
     type(ESMF_GridComp)  :: gcomp
     integer, intent(out) :: rc
@@ -1153,6 +1155,9 @@ contains
     end if
 #else
     call w3wave ( 1, odat, timen )
+!PSH Begin theorywaves
+    call twmodel ( 1 )
+!PSH End theorywaves
 #endif
     if(profile_memory) call ESMF_VMLogMemInfo("Exiting  WW3 Run : ")
 
