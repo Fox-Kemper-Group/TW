@@ -211,12 +211,8 @@ CONTAINS
      ix  = mapsf(isea,1)
      iy  = mapsf(isea,2)
      if (mapsta(iy,ix) == 1) then
-!       wx = wx0(ix,iy)
-!       wy = wy0(ix,iy)
-       u10 = SQRT((wx0(ix,iy)**2)+(wy0(ix,iy)**2))
-!       u10 = sqrt((wx**2)+(wy**2))
+       u10 = sqrt((wx0(ix,iy)**2)+(wy0(ix,iy)**2))
        u10dir = atan2(wy0(ix,iy),wx0(ix,iy))
-!       u10dir = atan2(wy,wx)
        ustar = sqrt(((tauax(ix,iy)**2)+(tauay(ix,iy)**2))/rhowtw)
        
        if (u10 .gt. ZERO .and. ustar .gt. ZERO) then
