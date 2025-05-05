@@ -652,9 +652,12 @@ contains
     mm = (stop_tod - (hh * 3600))/60
     ss = stop_tod - (hh*3600) - (mm*60)
 
+!PSH Begin TheoryWaves
     timen(1) = stop_ymd
     timen(2) = hh*10000 + mm*100 + ss
-
+!    timen(1) = time0(1)
+!    timen(2) = time0(2)
+!PSH End TheoryWaves
     call stme21 ( time0 , dtme21 )
     if ( root_task ) then
       write (stdout,'(a)')' Starting time : '//trim(dtme21)

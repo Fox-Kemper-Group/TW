@@ -911,6 +911,11 @@ CONTAINS
 #ifdef W3_DEBUGCOH
       CALL ALL_VA_INTEGRAL_PRINT(IMOD, "W3WAVEMD, step 6.1", 1)
 #endif
+!PSH Begin theorywaves
+! skip section 2
+!      GOTO 381
+!PSH End theorywaves
+
       !
       !
       ! 2.a Pre-calculate table for IC3 ------------------------------------ /
@@ -1037,6 +1042,9 @@ CONTAINS
 #ifdef W3_T
       WRITE (NDST,9020) IT0, NT, DTGA
 #endif
+!PSH Begin theorywaves
+!381   CONTINUE
+!PSH End theorywaves
       !
       ! ==================================================================== /
       !
@@ -1103,7 +1111,11 @@ CONTAINS
 #ifdef W3_T
         WRITE (NDST,9021) ITIME, IT, TIME, FLMAP, FLDDIR, VGX, VGY, DTG, DTRES
 #endif
-        !
+        
+!PSH Begin theorywaves
+!Skip the entirety of the wave model
+        GOTO 380
+!PSH End theorywaves
         ! 3.1 Interpolate winds, currents, and momentum.
         !     (Initialize wave fields with winds)
         !
@@ -1685,7 +1697,7 @@ CONTAINS
 #endif
 
 !PSH TheoryWaves begin
-!skip original WWIII wave model
+!skip wave propagation
         GOTO 380
 !PSH TheoryWaves end
 
