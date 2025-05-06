@@ -213,8 +213,10 @@ CONTAINS
      if (mapsta(iy,ix) == 1) then
        u10 = sqrt((wx0(ix,iy)**2)+(wy0(ix,iy)**2))
        u10dir = atan2(wy0(ix,iy),wx0(ix,iy))
-       ustar = sqrt(((tauax(ix,iy)**2)+(tauay(ix,iy)**2))/rhowtw)
-       
+!PSH Begin
+!       ustar = sqrt(((tauax(ix,iy)**2)+(tauay(ix,iy)**2))/rhowtw)
+       ustar = sqrt((sqrt((tauax(ix,iy)**2)+(tauay(ix,iy)**2)))/rhowtw)
+!PSH End       
        if (u10 .gt. ZERO .and. ustar .gt. ZERO) then
          ! surface Stokes drift
          us = us_to_u10*u10
