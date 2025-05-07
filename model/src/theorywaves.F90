@@ -272,7 +272,6 @@ CONTAINS
          EFactor = sqrt(ONE &
                   +ONE/1.5**2*lasl_sqr_i &
                   +ONE/5.4**4*lasl_sqr_i**2)
-!         EFactor = 2.
        else
          fm = ONE
          fp = ZERO
