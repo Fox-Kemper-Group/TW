@@ -198,7 +198,7 @@ CONTAINS
 
     integer                 :: n, jsea, isea, ix, iy, ib
     real                    :: sww, langmt, lasl, laslpj, alphal
-    real                    :: u10, ustar, u10dir
+    real                    :: u10, ustar, u10dir, tau
     real                    :: wx, wy
     real                    :: us, hm0, fm, fp, vstokes, kphil, kstar
     real                    :: z0, z0i, r1, r2, r3, r4, tmp
@@ -215,7 +215,9 @@ CONTAINS
        u10dir = atan2(wy0(ix,iy),wx0(ix,iy))
 !PSH Begin
 !       ustar = sqrt(((tauax(ix,iy)**2)+(tauay(ix,iy)**2))/rhowtw)
-       ustar = sqrt((sqrt((tauax(ix,iy)**2)+(tauay(ix,iy)**2)))/rhowtw)
+!       ustar = sqrt((sqrt((tauax(ix,iy)**2)+(tauay(ix,iy)**2)))/rhowtw)
+       tau = sqrt((tauax(ix,iy)**2)+(tauay(ix,iy)**2))
+       ustar = sqrt(tau/rhowtw)
 !PSH End       
        if (u10 .gt. ZERO .and. ustar .gt. ZERO) then
          ! surface Stokes drift
@@ -295,9 +297,14 @@ CONTAINS
      ! wave diagnostics
      fp0(jsea) = fp
      hs(jsea) = hm0
-     t01(jsea) = ONE/fm
-     t0m1(jsea) = ONE/fm
-     t02(jsea) = ONE/fm
+!PSH Begin - debugging
+!     t01(jsea) = ONE/fm
+!     t0m1(jsea) = ONE/fm
+!     t02(jsea) = ONE/fm
+     t01(jsea) = tau
+     t0m1(jsea) = ustar
+     t02(jsea) = u10     
+!PSH End - debugging
      thm(jsea) = u10dir 
      ussx(jsea) = us_sl*cos(u10dir)
      ussy(jsea) = us_sl*sin(u10dir)
