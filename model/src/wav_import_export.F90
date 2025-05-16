@@ -487,7 +487,7 @@ contains
     ! ocn mixing layer depth
 !PSH Begin theorywaves
 !    global_data = max(global_data, 5.)*0.2
-    global_data = max(global_data, 5.)*0.2
+    global_data = max(global_data, 5.)
 !PSH End theorywaves
     call FillGlobalInput(global_data, HSL)
 #endif
