@@ -165,9 +165,8 @@ CONTAINS
     !       5.  Update log file.
     !       6.  If time is not ending time, branch back to 2.
     !     ----------------------------------------------------------- 
-    use CONSTANTS     , only : GRAV, PI
+    use CONSTANTS     , only : GRAV, PI, UNDEF
     use w3gdatmd      , only : nseal, mapsf, MAPSTA, USSPF, NK, w3setg, nsea
-!    use w3idatmd      , only : HSL, UWX, UWY
     use w3idatmd      , only : hsl 
     use w3idatmd      , only : WX0, WY0
     use w3idatmd      , only : tauax, tauay
@@ -213,12 +212,8 @@ CONTAINS
      if (mapsta(iy,ix) == 1) then
        u10 = sqrt((wx0(ix,iy)**2)+(wy0(ix,iy)**2))
        u10dir = atan2(wy0(ix,iy),wx0(ix,iy))
-!PSH Begin
-!       ustar = sqrt(((tauax(ix,iy)**2)+(tauay(ix,iy)**2))/rhowtw)
-!       ustar = sqrt((sqrt((tauax(ix,iy)**2)+(tauay(ix,iy)**2)))/rhowtw)
        tau = sqrt((tauax(ix,iy)**2)+(tauay(ix,iy)**2))
        ustar = sqrt(tau/rhowtw)
-!PSH End       
        if (u10 .gt. ZERO .and. ustar .gt. ZERO) then
          ! surface Stokes drift
          us = us_to_u10*u10
@@ -274,43 +269,62 @@ CONTAINS
          EFactor = sqrt(ONE &
                   +ONE/1.5**2*lasl_sqr_i &
                   +ONE/5.4**4*lasl_sqr_i**2)
+         ! exported quantities
+         ! Lamguir multiplier
+         lamult(jsea) = EFactor
+         ! wave diagnostics
+         fp0(jsea) = fp
+         hs(jsea) = hm0
+         t01(jsea) = ONE/fm
+         t0m1(jsea) = ONE/fm
+         t02(jsea) = ONE/fm
+         thm(jsea) = u10dir
+         ussx(jsea) = us_sl*cos(u10dir)
+         ussy(jsea) = us_sl*sin(u10dir)
        else
-         fm = ONE
-         fp = ZERO
-         hm0 = ZERO
-         us_sl = ZERO
-         
-         EFactor = ONE
+         ! exported quantities
+         ! Lamguir multiplier
+         lamult(jsea) = ONE
+         ! wave diagnostics
+         fp0(jsea) = ZERO
+         hs(jsea) = ZERO
+         t01(jsea) = ZERO
+         t0m1(jsea) = ZERO
+         t02(jsea) = ZERO
+         thm(jsea) = ZERO
+         ussx(jsea) = ZERO
+         ussy(jsea) = ZERO
        endif
      else
-       u10 = ZERO
-       u10dir = ZERO
-       ustar = ZERO
-
-       fm = ONE
-       fp = ZERO
-       hm0 = ZERO
-       us_sl = ZERO
-
-       EFactor = ONE
+!       u10 = ZERO
+!       u10dir = ZERO
+!       ustar = ZERO
+!
+!       fm = ONE
+!       fp = ZERO
+!       hm0 = ZERO
+!       us_sl = ZERO
+!
+!       EFactor = ONE
+        lamult(jsea) = 0.5
      endif
      ! wave diagnostics
-     fp0(jsea) = fp
-     hs(jsea) = hm0
+!     fp0(jsea) = fp
+!     hs(jsea) = hm0
 !PSH Begin - debugging
 !     t01(jsea) = ONE/fm
 !     t0m1(jsea) = ONE/fm
 !     t02(jsea) = ONE/fm
-     t01(jsea) = tau
-     t0m1(jsea) = ustar
-     t02(jsea) = u10     
+!     t01(jsea) = tau
+!     t0m1(jsea) = ustar
+!     t02(jsea) = u10     
 !PSH End - debugging
-     thm(jsea) = u10dir 
-     ussx(jsea) = us_sl*cos(u10dir)
-     ussy(jsea) = us_sl*sin(u10dir)
+!     thm(jsea) = u10dir 
+!     ussx(jsea) = us_sl*cos(u10dir)
+!     ussy(jsea) = us_sl*sin(u10dir)
 
-     ! to be passed to mediator     
-     lamult(jsea) = EFactor
+!     ! to be passed to mediator     
+!     lamult(jsea) = EFactor
     enddo
 
   end subroutine twmodel
