@@ -295,36 +295,7 @@ CONTAINS
          ussx(jsea) = ZERO
          ussy(jsea) = ZERO
        endif
-     else
-!       u10 = ZERO
-!       u10dir = ZERO
-!       ustar = ZERO
-!
-!       fm = ONE
-!       fp = ZERO
-!       hm0 = ZERO
-!       us_sl = ZERO
-!
-!       EFactor = ONE
-        lamult(jsea) = 0.5
      endif
-     ! wave diagnostics
-!     fp0(jsea) = fp
-!     hs(jsea) = hm0
-!PSH Begin - debugging
-!     t01(jsea) = ONE/fm
-!     t0m1(jsea) = ONE/fm
-!     t02(jsea) = ONE/fm
-!     t01(jsea) = tau
-!     t0m1(jsea) = ustar
-!     t02(jsea) = u10     
-!PSH End - debugging
-!     thm(jsea) = u10dir 
-!     ussx(jsea) = us_sl*cos(u10dir)
-!     ussy(jsea) = us_sl*sin(u10dir)
-
-!     ! to be passed to mediator     
-!     lamult(jsea) = EFactor
     enddo
 
   end subroutine twmodel
