@@ -165,10 +165,11 @@ CONTAINS
     !       5.  Update log file.
     !       6.  If time is not ending time, branch back to 2.
     !     ----------------------------------------------------------- 
-    use CONSTANTS     , only : GRAV, PI, UNDEF
-    use w3gdatmd      , only : nseal, mapsf, MAPSTA, USSPF, NK, w3setg, nsea
+    use constants     , only : grav, pi 
+!    use w3gdatmd      , only : nseal, mapsf, MAPSTA, USSPF, NK, w3setg, nsea
+    use w3gdatmd      , only : nseal, mapsf, mapsta
     use w3idatmd      , only : hsl 
-    use w3idatmd      , only : WX0, WY0
+    use w3idatmd      , only : wx0, wy0
     use w3idatmd      , only : tauax, tauay
     use w3adatmd      , only : hs, fp0, t02, t0m1, t01, thm
     use w3adatmd      , only : lamult, ussx, ussy
