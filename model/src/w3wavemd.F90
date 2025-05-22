@@ -913,7 +913,7 @@ CONTAINS
 #endif
 !PSH Begin theorywaves
 ! skip section 2
-!      GOTO 381
+      GOTO 381
 !PSH End theorywaves
 
       !
@@ -1014,6 +1014,9 @@ CONTAINS
         END DO ! DO JSEA=1,NSEAL
       END IF !  IF USE_CGICE ...
 #endif
+!PSH Begin theorywaves
+381   CONTINUE
+!PSH End theorywaves
       !
       IF ( TOFRST(1) .GT. 0 ) THEN
         DTTST  = DSEC21 ( TEND , TOFRST )
