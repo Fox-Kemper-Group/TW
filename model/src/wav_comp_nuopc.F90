@@ -1157,9 +1157,12 @@ contains
       call w3wave ( 1, odat, timen )
     end if
 #else
-    call w3wave ( 1, odat, timen )
 !PSH Begin theorywaves
     call twmodel ( 1 )
+!PSH End theorywaves
+    call w3wave ( 1, odat, timen )
+!PSH Begin theorywaves
+!    call twmodel ( 1 )
 !PSH End theorywaves
 #endif
     if(profile_memory) call ESMF_VMLogMemInfo("Exiting  WW3 Run : ")
